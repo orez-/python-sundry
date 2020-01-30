@@ -1,0 +1,15 @@
+emoji_ranges = [
+    (0x1F300, 0x1F64F),
+    (0x1F680, 0x1F6C5),
+    (0x2600, 0x27BF),
+    (0x1F191, 0x1F19A),
+    (0x231A, 0x231A),
+    (0x1F910, 0x1F9C0),
+    (0x2B00, 0x2BFF),
+    (0x25A0, 0x25FF),
+    (0x2300, 0x23FF),
+]
+
+for start, end in emoji_ranges:
+    for point in range(start, end + 1):
+        print(chr(point), end=' ')
