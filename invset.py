@@ -214,7 +214,12 @@ def test_gte(left, right, expected):
 
 
 def test_copy():
-    invs = InvSet({1, 2, 3})
+    inv1 = InvSet({1, 2, 3})
+    inv2 = inv1.copy()
+    assert inv1 is not inv2
+    assert inv1 == inv2
+    inv2.discard(4)
+    assert inv1 != inv2
 
 
 @pytest.mark.parametrize("invset,value,expected", [
