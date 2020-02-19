@@ -1,3 +1,4 @@
+import colorsys
 import random
 
 import PIL.Image
@@ -6,27 +7,6 @@ import PIL.ImageDraw
 bg_fill = (0xF0, 0xF0, 0xF0)
 SIZE = 5
 UPSCALE = 70
-
-
-def hsv_to_rgb(hue, saturation, value):
-    # https://www.rapidtables.com/convert/color/hsv-to-rgb.html
-    C = value * saturation
-    X = C * (1 - abs((hue / 60) % 2 - 1))
-    m = value - C
-
-    if 0 <= hue < 60:
-        r, g, b = C, X, 0
-    elif 60 <= hue < 120:
-        r, g, b = X, C, 0
-    elif 120 <= hue < 180:
-        r, g, b = 0, C, X
-    elif 180 <= hue < 240:
-        r, g, b = 0, X, C
-    elif 240 <= hue < 300:
-        r, g, b = X, 0, C
-    elif 300 <= hue < 360:
-        r, g, b = C, 0, X
-    return int((r + m) * 255), int((g + m) * 255), int((b + m) * 255)
 
 
 # saturation, value
@@ -48,11 +28,16 @@ def hsv_to_rgb(hue, saturation, value):
 # 32, 85
 # 34, 89
 def pick_color():
-    return hsv_to_rgb(
-        hue=random.randint(0, 359),
-        saturation=random.randint(30, 65) / 100,
-        value=random.randint(75, 90) / 100,
-    )
+    return rgb_to_bytes(colorsys.hsv_to_rgb(
+        random.randint(0, 359),
+        random.randint(30, 65) / 100,
+        random.randint(75, 90) / 100,
+    ))
+
+
+def rgb_to_bytes(rgb):
+    r, g, b = rgb
+    return int(r * 255), int(g * 255), int(b * 255)
 
 
 def main():
@@ -66,7 +51,9 @@ def main():
             if random.randint(0, 1):
                 img.putpixel((x, y), fg_fill)
                 img.putpixel((SIZE - x - 1, y), fg_fill)
-    img = img.resize((SIZE * UPSCALE, SIZE * UPSCALE))
+    img = img.resize((SIZE * UPSCALE, SIZE * UPSCALE), resample=PIL.Image.NEAREST)
+
+    # Add padding
     canvas = PIL.Image.new('RGB', ((SIZE + 1) * UPSCALE, (SIZE + 1) * UPSCALE))
     draw = PIL.ImageDraw.Draw(canvas)
     draw.rectangle(((0, 0), canvas.size), fill=bg_fill)
